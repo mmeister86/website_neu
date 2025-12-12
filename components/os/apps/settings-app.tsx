@@ -8,11 +8,11 @@ export function SettingsApp() {
   const { wallpaper, setWallpaper, availableWallpapers } = useOSContext()
 
   return (
-    <div className="h-full w-full p-6 bg-background/95 backdrop-blur-sm">
-      <h2 className="text-2xl font-bold mb-6">Desktop Settings</h2>
+    <div className="h-full bg-transparent p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold mb-6 text-foreground">Desktop Settings</h2>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-4">Wallpaper Selection</h3>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="text-lg font-semibold mb-4 text-foreground">Wallpaper Selection</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {availableWallpapers.map((wallpaperPath) => (
             <button
