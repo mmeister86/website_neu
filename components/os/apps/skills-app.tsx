@@ -11,7 +11,7 @@ const SKILLS = [
 
 export function SkillsApp() {
   return (
-    <div className="h-full bg-background p-4 overflow-y-auto">
+    <div className="h-full bg-transparent p-4 overflow-y-auto">
       <div className="space-y-1 mb-4 font-mono text-xs text-terminal-dim">
         <p>$ cat /proc/skills</p>
       </div>

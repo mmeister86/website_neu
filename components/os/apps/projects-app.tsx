@@ -26,7 +26,7 @@ const PROJECTS = [
 
 export function ProjectsApp() {
   return (
-    <div className="h-full bg-background p-4 overflow-y-auto">
+    <div className="h-full bg-transparent p-4 overflow-y-auto">
       <div className="space-y-4">
         {PROJECTS.map((project) => (
           <div

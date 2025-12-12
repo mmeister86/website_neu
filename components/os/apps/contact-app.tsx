@@ -9,7 +9,7 @@ const CONTACTS = [
 
 export function ContactApp() {
   return (
-    <div className="h-full bg-background p-4 overflow-y-auto">
+    <div className="h-full bg-transparent p-4 overflow-y-auto">
       <div className="text-center mb-6">
         <h2 className="text-lg font-semibold text-foreground">Kontakt</h2>
         <p className="text-sm text-terminal-dim">Antwortzeit: 24-48h</p>

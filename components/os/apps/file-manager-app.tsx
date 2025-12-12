@@ -84,7 +84,7 @@ export function FileManagerApp() {
   const items = getCurrentItems()
 
   return (
-    <div className="h-full bg-background flex flex-col">
+    <div className="h-full bg-transparent flex flex-col">
       {/* Toolbar */}
       <div className="p-2 border-b border-border flex items-center gap-2 bg-card/50">
         <button onClick={goHome} className="p-1.5 hover:bg-secondary rounded transition-colors">

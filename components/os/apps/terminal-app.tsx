@@ -58,6 +58,7 @@ const COMMANDS: Record<string, () => OutputLine[]> = {
     { type: "response", content: "  whoami      Kurze Bio" },
     { type: "response", content: "  ls          Dateien auflisten" },
     { type: "response", content: "  cat         Datei lesen" },
+    { type: "response", content: "  speedtest   Netzwerkgeschwindigkeit testen" },
     { type: "response", content: "  clear       Terminal leeren" },
     { type: "response", content: "  chaos       ???" },
     { type: "response", content: "" },
@@ -125,6 +126,7 @@ export function TerminalApp() {
   const [input, setInput] = useState("")
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [isSpeedTestRunning, setIsSpeedTestRunning] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -135,6 +137,78 @@ export function TerminalApp() {
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
+
+  const runSpeedTest = () => {
+    const initialLines: OutputLine[] = [
+      { type: "response", content: "" },
+      { type: "response", content: "  Speedtest wird gestartet..." },
+      { type: "response", content: "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" },
+      { type: "response", content: "" },
+      { type: "response", content: "  Server wird gesucht..." },
+    ]
+
+    setOutput((prev) => [...prev, ...initialLines])
+
+    // Server found
+    setTimeout(() => {
+      setOutput((prev) => [...prev, { type: "response", content: "  Server gefunden: Speedtest.net (Berlin, 12km)" }])
+
+      // Ping test
+      setTimeout(() => {
+        const ping = Math.floor(Math.random() * 20) + 5;
+        setOutput((prev) => [...prev, { type: "response", content: `  Ping-Test läuft... ${ping}ms` }])
+
+        // Download test with progress
+        setTimeout(() => {
+          setOutput((prev) => [...prev, { type: "response", content: "  Download-Test wird durchgeführt..." }])
+
+          let progress = 0;
+          const progressInterval = setInterval(() => {
+            progress += Math.random() * 15 + 5;
+            if (progress >= 100) {
+              progress = 100;
+              clearInterval(progressInterval);
+
+              const download = (Math.random() * 800 + 200).toFixed(2);
+              setOutput((prev) => [...prev, { type: "response", content: `  Download: ${download} Mbps` }])
+
+              // Upload test
+              setTimeout(() => {
+                setOutput((prev) => [...prev, { type: "response", content: "  Upload-Test wird durchgeführt..." }])
+
+                let uploadProgress = 0;
+                const uploadInterval = setInterval(() => {
+                  uploadProgress += Math.random() * 15 + 5;
+                  if (uploadProgress >= 100) {
+                    uploadProgress = 100;
+                    clearInterval(uploadInterval);
+
+                    const upload = (Math.random() * 400 + 50).toFixed(2);
+                    const finalLines: OutputLine[] = [
+                      { type: "response", content: `  Upload: ${upload} Mbps` },
+                      { type: "response", content: "" },
+                      { type: "response", content: "  ─────── ERGEBNISSE ───────" },
+                      { type: "response", content: "" },
+                      { type: "response", content: `  Ping: ${ping} ms` },
+                      { type: "response", content: `  Download: ${download} Mbps` },
+                      { type: "response", content: `  Upload: ${upload} Mbps` },
+                      { type: "response", content: "" },
+                      { type: "response", content: "  Verbindungstyp: Quantum Entanglement" },
+                      { type: "response", content: "  Jitter: 0.42 ms" },
+                      { type: "response", content: "  Paketverlust: 0.0%" },
+                      { type: "response", content: "" },
+                    ]
+                    setOutput((prev) => [...prev, ...finalLines])
+                    setIsSpeedTestRunning(false)
+                  }
+                }, 100)
+              }, 500)
+            }
+          }, 100)
+        }, 1000)
+      }, 800)
+    }, 1000)
+  }
 
   const handleCommand = (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase()
@@ -147,6 +221,18 @@ export function TerminalApp() {
 
     if (trimmed === "clear") {
       setOutput([])
+      setInput("")
+      return
+    }
+
+    if (trimmed === "speedtest") {
+      if (isSpeedTestRunning) {
+        setOutput((prev) => [...prev, commandOutput, { type: "response", content: "  Speedtest läuft bereits..." }])
+      } else {
+        setIsSpeedTestRunning(true)
+        setOutput((prev) => [...prev, commandOutput])
+        runSpeedTest()
+      }
       setInput("")
       return
     }
@@ -185,7 +271,7 @@ export function TerminalApp() {
 
   return (
     <div
-      className="h-full bg-background p-3 font-mono text-sm overflow-y-auto cursor-text"
+      className="h-full bg-transparent p-3 font-mono text-sm overflow-y-auto cursor-text"
       onClick={() => inputRef.current?.focus()}
       ref={scrollRef}
     >

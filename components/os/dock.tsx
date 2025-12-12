@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Terminal, User, FolderKanban, Mail, Code2, FolderOpen } from "lucide-react"
+import { Terminal, User, FolderKanban, Mail, Code2, FolderOpen, Settings } from "lucide-react"
 import type { AppId, WindowState } from "./desktop"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +18,7 @@ const DOCK_ITEMS: { id: AppId; icon: React.ElementType; label: string }[] = [
   { id: "projects", icon: FolderKanban, label: "Projekte" },
   { id: "files", icon: FolderOpen, label: "Dateien" },
   { id: "contact", icon: Mail, label: "Kontakt" },
+  { id: "settings", icon: Settings, label: "Settings" },
 ]
 
 export function Dock({ windows, onOpenApp }: DockProps) {
@@ -40,7 +41,7 @@ export function Dock({ windows, onOpenApp }: DockProps) {
               <div
                 className={cn(
                   "w-11 h-11 rounded-xl flex items-center justify-center transition-all",
-                  "bg-gradient-to-br shadow-lg",
+                  "bg-linear-to-br shadow-lg",
                   item.id === "terminal"
                     ? "from-gray-700 to-gray-900"
                     : item.id === "about"
@@ -51,7 +52,9 @@ export function Dock({ windows, onOpenApp }: DockProps) {
                           ? "from-terminal-yellow/80 to-terminal-yellow"
                           : item.id === "files"
                             ? "from-terminal-cyan/80 to-terminal-cyan"
-                            : "from-purple-500/80 to-purple-600",
+                            : item.id === "settings"
+                              ? "from-purple-500/80 to-purple-600"
+                              : "from-purple-500/80 to-purple-600",
                 )}
               >
                 <Icon className="w-6 h-6 text-white" />

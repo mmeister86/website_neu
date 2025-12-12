@@ -9,6 +9,32 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 })
 
+const AVAILABLE_WALLPAPERS = [
+  "/images/Blaues und rosafarbenes Licht.jpg",
+  "/images/lake-mountains-rocks-sunrise-daylight-scenery-illustration-3840x2160-3773.jpg",
+  "/images/sean-fahrenbruch-g95tsUeCohM-unsplash.jpg",
+  "/images/waves-macos-big-sur-colorful-dark-5k-6016x6016-4990.jpg",
+  "/images/wellen-20hintergrund-20wallpaper.jpg",
+]
+
+const DEFAULT_WALLPAPER = "/images/wellen-20hintergrund-20wallpaper.jpg"
+
+function getWallpaperFromCookie(cookieHeader: string | null): string {
+  if (!cookieHeader) return DEFAULT_WALLPAPER
+
+  const cookies = cookieHeader.split(";")
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split("=")
+    if (name === "os-wallpaper") {
+      const decodedValue = decodeURIComponent(value)
+      if (AVAILABLE_WALLPAPERS.includes(decodedValue)) {
+        return decodedValue
+      }
+    }
+  }
+  return DEFAULT_WALLPAPER
+}
+
 export const metadata: Metadata = {
   title: "matthias.lol | Software Engineer",
   description: "Chaos Quest - Terminal Portfolio von Matthias",
@@ -39,7 +65,41 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body className={`${jetbrainsMono.className} antialiased`}>
+      <body
+        className={`${jetbrainsMono.className} antialiased`}
+        style={{
+          // Set CSS variable for wallpaper that will be updated by client-side script
+          "--wallpaper-url": `url('${DEFAULT_WALLPAPER}')`,
+        } as React.CSSProperties}
+      >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const DEFAULT_WALLPAPER = "${DEFAULT_WALLPAPER}";
+                const AVAILABLE_WALLPAPERS = ${JSON.stringify(AVAILABLE_WALLPAPERS)};
+
+                function getWallpaperFromCookie() {
+                  const cookies = document.cookie.split(";");
+                  for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split("=");
+                    if (name === "os-wallpaper") {
+                      const decodedValue = decodeURIComponent(value);
+                      if (AVAILABLE_WALLPAPERS.includes(decodedValue)) {
+                        return decodedValue;
+                      }
+                    }
+                  }
+                  return DEFAULT_WALLPAPER;
+                }
+
+                // Set the wallpaper immediately to prevent flash
+                const wallpaper = getWallpaperFromCookie();
+                document.body.style.setProperty("--wallpaper-url", \`url('\${wallpaper}')\`);
+              })();
+            `,
+          }}
+        />
         {children}
         <Analytics />
       </body>

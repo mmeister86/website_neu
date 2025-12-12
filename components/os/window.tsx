@@ -144,7 +144,7 @@ export function Window({
         width: win.isMaximized ? "100%" : win.size.width,
         height: win.isMaximized ? "calc(100% - 28px - 70px)" : win.size.height,
         zIndex: win.zIndex,
-        backgroundColor: "rgba(20, 20, 35, 0.8)",
+          backgroundColor: "rgba(45, 52, 54, 0.8)",
       }}
       onMouseDown={onFocus}
     >

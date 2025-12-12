@@ -1,10 +1,10 @@
 export function AboutApp() {
   return (
-    <div className="h-full bg-background p-6 overflow-y-auto">
+    <div className="h-full bg-transparent p-6 overflow-y-auto">
       <div className="max-w-md mx-auto">
         {/* Avatar */}
         <div className="flex flex-col items-center mb-6">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-terminal-pink to-terminal-cyan flex items-center justify-center text-4xl font-bold text-background mb-3">
+          <div className="w-24 h-24 rounded-full bg-linear-to-br from-terminal-pink to-terminal-cyan flex items-center justify-center text-4xl font-bold text-background mb-3">
             M
           </div>
           <h1 className="text-xl font-bold text-foreground">Matthias</h1>
