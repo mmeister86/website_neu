@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useCallback } from "react"
+import { useSelection } from "@/hooks/use-selection"
 import { Dock } from "./dock"
 import { Window } from "./window"
 import { TopBar } from "./top-bar"
@@ -50,6 +51,7 @@ const APP_COMPONENTS: Record<AppId, React.ComponentType> = {
 
 function DesktopContent() {
   const { wallpaper } = useOSContext()
+  const { isSelecting, selectionStyle, handlers: selectionHandlers } = useSelection()
   const [windows, setWindows] = useState<WindowState[]>([
     {
       id: "terminal",
@@ -130,12 +132,22 @@ function DesktopContent() {
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-background relative select-none">
+      {/* Desktop background - handles selection */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `var(--wallpaper-url, url('${wallpaper}'))`,
         }}
+        onMouseDown={selectionHandlers.onMouseDown}
       />
+
+      {/* Selection Rectangle */}
+      {isSelecting && selectionStyle && (
+        <div
+          className="bg-primary/20 border border-primary/60 rounded-sm z-10"
+          style={selectionStyle}
+        />
+      )}
 
       {/* Top Bar */}
       <TopBar />
