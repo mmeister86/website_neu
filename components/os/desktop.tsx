@@ -130,6 +130,32 @@ function DesktopContent() {
 
   const openWindows = windows.filter((w) => w.isOpen && !w.isMinimized)
 
+  // Get the active (focused) window - the one with highest zIndex
+  const activeWindow = openWindows.length > 0
+    ? openWindows.reduce((prev, current) => (prev.zIndex > current.zIndex ? prev : current))
+    : null
+
+  const activeAppTitle = activeWindow ? APP_CONFIG[activeWindow.id].title : "Finder"
+
+  // Callbacks for TopBar
+  const closeActiveWindow = useCallback(() => {
+    if (activeWindow) {
+      closeApp(activeWindow.id)
+    }
+  }, [activeWindow, closeApp])
+
+  const minimizeActiveWindow = useCallback(() => {
+    if (activeWindow) {
+      minimizeApp(activeWindow.id)
+    }
+  }, [activeWindow, minimizeApp])
+
+  const maximizeActiveWindow = useCallback(() => {
+    if (activeWindow) {
+      maximizeApp(activeWindow.id)
+    }
+  }, [activeWindow, maximizeApp])
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-background relative select-none">
       {/* Desktop background - handles selection */}
@@ -150,7 +176,13 @@ function DesktopContent() {
       )}
 
       {/* Top Bar */}
-      <TopBar />
+      <TopBar
+        onOpenApp={openApp}
+        onCloseActiveWindow={closeActiveWindow}
+        onMinimizeActiveWindow={minimizeActiveWindow}
+        onMaximizeActiveWindow={maximizeActiveWindow}
+        activeApp={activeAppTitle}
+      />
 
       {/* Windows */}
       {openWindows.map((window) => {
