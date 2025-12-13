@@ -29,14 +29,56 @@ export interface WindowState {
   size: { width: number; height: number }
 }
 
-const APP_CONFIG: Record<AppId, { title: string; defaultSize: { width: number; height: number } }> = {
-  terminal: { title: "Terminal", defaultSize: { width: 700, height: 500 } },
-  about: { title: "Über Mich", defaultSize: { width: 500, height: 450 } },
-  projects: { title: "Projekte", defaultSize: { width: 600, height: 500 } },
-  contact: { title: "Kontakt", defaultSize: { width: 400, height: 350 } },
-  skills: { title: "Skills.exe", defaultSize: { width: 550, height: 480 } },
-  files: { title: "Dateien", defaultSize: { width: 600, height: 450 } },
-  settings: { title: "Settings", defaultSize: { width: 600, height: 500 } },
+interface AppConfig {
+  title: string
+  defaultSize: { width: number; height: number }
+  minSize: { width: number; height: number }
+  optimalSize: { width: number; height: number }
+}
+
+const APP_CONFIG: Record<AppId, AppConfig> = {
+  terminal: {
+    title: "Terminal",
+    defaultSize: { width: 700, height: 500 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 700, height: 500 },
+  },
+  about: {
+    title: "Über Mich",
+    defaultSize: { width: 500, height: 450 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 500, height: 580 }, // Erhöht für vollständigen Inhalt
+  },
+  projects: {
+    title: "Projekte",
+    defaultSize: { width: 600, height: 500 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 600, height: 550 }, // Etwas erhöht
+  },
+  contact: {
+    title: "Kontakt",
+    defaultSize: { width: 400, height: 350 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 400, height: 420 }, // Erhöht für alle Kontakte
+  },
+  skills: {
+    title: "Skills.exe",
+    defaultSize: { width: 550, height: 480 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 550, height: 520 }, // Etwas erhöht
+  },
+  files: {
+    title: "Dateien",
+    defaultSize: { width: 600, height: 450 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 600, height: 450 },
+  },
+  settings: {
+    title: "Settings",
+    defaultSize: { width: 600, height: 500 },
+    minSize: { width: 300, height: 200 },
+    optimalSize: { width: 600, height: 500 },
+  },
 }
 
 const APP_COMPONENTS: Record<AppId, React.ComponentType> = {
@@ -47,6 +89,33 @@ const APP_COMPONENTS: Record<AppId, React.ComponentType> = {
   skills: SkillsApp,
   files: FileManagerApp,
   settings: SettingsApp,
+}
+
+/**
+ * Berechnet die optimale Fenstergröße, die sicherstellt, dass der Inhalt vollständig sichtbar ist
+ * Berücksichtigt Viewport-Grenzen (TopBar: 28px, Dock: ~70px)
+ */
+function calculateOptimalWindowSize(
+  appId: AppId,
+  viewportWidth: number = typeof window !== "undefined" ? window.innerWidth : 1920,
+  viewportHeight: number = typeof window !== "undefined" ? window.innerHeight : 1080,
+): { width: number; height: number } {
+  const config = APP_CONFIG[appId]
+  const optimalSize = config.optimalSize
+
+  // Viewport-Grenzen: TopBar (28px) + Dock (~70px) + etwas Padding
+  const maxHeight = viewportHeight - 28 - 70 - 40 // 40px Padding
+  const maxWidth = viewportWidth - 40 // 40px Padding
+
+  // Verwende die optimale Größe, aber respektiere Viewport-Grenzen
+  const width = Math.min(optimalSize.width, maxWidth)
+  const height = Math.min(optimalSize.height, maxHeight)
+
+  // Stelle sicher, dass die minimale Größe eingehalten wird
+  return {
+    width: Math.max(width, config.minSize.width),
+    height: Math.max(height, config.minSize.height),
+  }
 }
 
 function DesktopContent() {
@@ -78,8 +147,9 @@ function DesktopContent() {
           // Otherwise bring to front
           return prev.map((w) => (w.id === appId ? { ...w, zIndex: maxZIndex + 1 } : w))
         }
-        // Open new window
+        // Open new window with optimal size
         const config = APP_CONFIG[appId]
+        const optimalSize = calculateOptimalWindowSize(appId)
         const offset = prev.length * 30
         return [
           ...prev,
@@ -91,7 +161,7 @@ function DesktopContent() {
             isMaximized: false,
             zIndex: maxZIndex + 1,
             position: { x: 100 + offset, y: 80 + offset },
-            size: config.defaultSize,
+            size: optimalSize,
           },
         ]
       })
