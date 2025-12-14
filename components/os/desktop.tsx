@@ -39,15 +39,15 @@ interface AppConfig {
 const APP_CONFIG: Record<AppId, AppConfig> = {
   terminal: {
     title: "Terminal",
-    defaultSize: { width: 700, height: 500 },
+    defaultSize: { width: 700, height: 600 },
     minSize: { width: 300, height: 200 },
-    optimalSize: { width: 700, height: 500 },
+    optimalSize: { width: 800, height: 600 },
   },
   about: {
     title: "Über Mich",
-    defaultSize: { width: 500, height: 450 },
+    defaultSize: { width: 500, height: 680 },
     minSize: { width: 300, height: 200 },
-    optimalSize: { width: 500, height: 580 }, // Erhöht für vollständigen Inhalt
+    optimalSize: { width: 500, height: 680 }, // Erhöht für vollständigen Inhalt
   },
   projects: {
     title: "Projekte",
@@ -57,9 +57,9 @@ const APP_CONFIG: Record<AppId, AppConfig> = {
   },
   contact: {
     title: "Kontakt",
-    defaultSize: { width: 400, height: 350 },
+    defaultSize: { width: 400, height: 470 },
     minSize: { width: 300, height: 200 },
-    optimalSize: { width: 400, height: 420 }, // Erhöht für alle Kontakte
+    optimalSize: { width: 400, height: 470 }, // Erhöht für alle Kontakte
   },
   skills: {
     title: "Skills.exe",
