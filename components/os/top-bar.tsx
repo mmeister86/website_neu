@@ -23,6 +23,7 @@ interface TopBarProps {
   onMinimizeActiveWindow?: () => void
   onMaximizeActiveWindow?: () => void
   activeApp?: string
+  onGameControl?: (action: string) => void
 }
 
 export function TopBar({
@@ -31,6 +32,7 @@ export function TopBar({
   onMinimizeActiveWindow,
   onMaximizeActiveWindow,
   activeApp = "Finder",
+  onGameControl,
 }: TopBarProps) {
   const [time, setTime] = useState(new Date())
   const [showSidebar, setShowSidebar] = useState(true)
@@ -49,7 +51,7 @@ export function TopBar({
           <MenubarTrigger className="text-sm px-2 py-0.5 h-6 font-bold text-terminal-pink data-[state=open]:bg-primary/20 rounded-sm">
 
           </MenubarTrigger>
-          <MenubarContent className="bg-card/95 backdrop-blur-md border-border min-w-[200px]">
+          <MenubarContent className="bg-card/95 backdrop-blur-md border-border min-w-50">
             <MenubarItem onClick={() => onOpenApp?.("about")}>
               Über MatthiasOS
             </MenubarItem>
@@ -259,6 +261,26 @@ export function TopBar({
           </MenubarContent>
         </MenubarMenu>
 
+        {/* Game Menu - only show when Brawl Game is active */}
+        {activeApp === "Brawl Game" && (
+          <MenubarMenu>
+            <MenubarTrigger className="text-xs px-2 py-0.5 h-6 text-muted-foreground data-[state=open]:bg-primary/20 data-[state=open]:text-foreground hover:text-foreground rounded-sm">
+              Game
+            </MenubarTrigger>
+            <MenubarContent className="bg-card/95 backdrop-blur-md border-border">
+              <MenubarItem onClick={() => onGameControl?.("restart")}>
+                New Game
+                <MenubarShortcut>⌘R</MenubarShortcut>
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onClick={() => onGameControl?.("pause")}>
+                Pause/Resume
+                <MenubarShortcut>⌘P</MenubarShortcut>
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        )}
+
         {/* Hilfe Menu */}
         <MenubarMenu>
           <MenubarTrigger className="text-xs px-2 py-0.5 h-6 text-muted-foreground data-[state=open]:bg-primary/20 data-[state=open]:text-foreground hover:text-foreground rounded-sm">
@@ -275,6 +297,15 @@ export function TopBar({
             <MenubarItem onClick={() => onOpenApp?.("about")}>
               Über den Entwickler
             </MenubarItem>
+            {activeApp === "Brawl Game" && (
+              <>
+                <MenubarSeparator />
+                <MenubarItem onClick={() => onGameControl?.("controls")}>
+                  Game Controls
+                  <MenubarShortcut>⌘?</MenubarShortcut>
+                </MenubarItem>
+              </>
+            )}
           </MenubarContent>
         </MenubarMenu>
       </Menubar>

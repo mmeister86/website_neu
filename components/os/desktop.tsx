@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useCallback } from "react"
 import { useSelection } from "@/hooks/use-selection"
+import { Gamepad2 } from "lucide-react"
 import { Dock } from "./dock"
 import { Window } from "./window"
 import { TopBar } from "./top-bar"
@@ -15,8 +16,9 @@ import { ContactApp } from "./apps/contact-app"
 import { SkillsApp } from "./apps/skills-app"
 import { FileManagerApp } from "./apps/file-manager-app"
 import { SettingsApp } from "./apps/settings-app"
+import { BrawlGameApp } from "./apps/brawl-game-app"
 
-export type AppId = "terminal" | "about" | "projects" | "contact" | "skills" | "files" | "settings"
+export type AppId = "terminal" | "about" | "projects" | "contact" | "skills" | "files" | "settings" | "brawl"
 
 export interface WindowState {
   id: AppId
@@ -79,6 +81,12 @@ const APP_CONFIG: Record<AppId, AppConfig> = {
     minSize: { width: 300, height: 200 },
     optimalSize: { width: 600, height: 500 },
   },
+  brawl: {
+    title: "Brawl Game",
+    defaultSize: { width: 900, height: 700 },
+    minSize: { width: 600, height: 500 },
+    optimalSize: { width: 900, height: 700 },
+  },
 }
 
 const APP_COMPONENTS: Record<AppId, React.ComponentType> = {
@@ -89,6 +97,7 @@ const APP_COMPONENTS: Record<AppId, React.ComponentType> = {
   skills: SkillsApp,
   files: FileManagerApp,
   settings: SettingsApp,
+  brawl: BrawlGameApp,
 }
 
 /**
@@ -226,6 +235,15 @@ function DesktopContent() {
     }
   }, [activeWindow, maximizeApp])
 
+  // Handle game control actions
+  const handleGameControl = useCallback((action: string) => {
+    if (activeWindow?.id === "brawl") {
+      // Use a custom event to communicate with the game component
+      const event = new CustomEvent('gameControl', { detail: action })
+      document.dispatchEvent(event)
+    }
+  }, [activeWindow])
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-background relative select-none">
       {/* Desktop background - handles selection */}
@@ -252,6 +270,7 @@ function DesktopContent() {
         onMinimizeActiveWindow={minimizeActiveWindow}
         onMaximizeActiveWindow={maximizeActiveWindow}
         activeApp={activeAppTitle}
+        onGameControl={handleGameControl}
       />
 
       {/* Windows */}
@@ -272,6 +291,21 @@ function DesktopContent() {
           </Window>
         )
       })}
+
+      {/* Desktop Icons */}
+      <div className="absolute top-12 left-4 z-10">
+        <button
+          onClick={() => openApp("brawl")}
+          className="group flex flex-col items-center p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
+        >
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg from-orange-500/80 to-red-600 bg-linear-to-br"
+          >
+            <Gamepad2 className="w-7 h-7 text-white" />
+          </div>
+          <span className="mt-1 text-xs text-white text-shadow">Brawl Game</span>
+        </button>
+      </div>
 
       {/* Dock */}
       <Dock windows={windows} onOpenApp={openApp} />
